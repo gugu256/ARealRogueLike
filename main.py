@@ -2,6 +2,10 @@ import os
 import msvcrt
 import random
 
+from colorama import Fore, Back, Style, just_fix_windows_console
+
+just_fix_windows_console()
+
 def clear_screen():
     os.system('cls')
 
@@ -92,12 +96,37 @@ def fight(enemyHP: int, enemyATK: list, enemyName: str, msg: list, loot: list):
     
     return won
 
+def extract(path):
+    hp = int(open(path + "/HP", "r").read())
+    atk = [int(open(path + "/ATK0", "r").read()), int(open(path + "/ATK1", "r").read())]
+    name = open(path + "/name", "r").read()
+    msgs = open(path + "/msg", "r").read().splitlines()
+    loot_final = []
+    items = open(path + "/loot", "r").read().splitlines()
+    quants = open(path + "/lootnbr", "r").read().splitlines()
+    for i in range(0, len(quants)):
+        quants[i] = int(quants[i])
+    for j in range(0, len(items)):
+        loot_final.append((items[j], quants[j]))
+    f = fight(hp, atk, name, msgs, loot_final)
+    if f:
+        return True
+    else:
+        return False
+
+def die():
+    clear_screen()
+    print("G A M E     O V E R")
+    print("\nSeems like you died. Oops")
+    input("Press enter to quit./")
+    quit()
+
 # Create the player
 last_char = ""
 player_y, player_x = 2, 2
-char =  "¤" 
+char =  "@"
 
-dungeon = open("dungeon.dng", "r").read().splitlines() 
+dungeon = open("dungeons/0.dng", "r").read().splitlines() 
 for row in range(len(dungeon)):
     dungeon[row] = dungeon[row].replace("#", "█").replace("u", "⮙")
 
@@ -106,7 +135,8 @@ def get_key():
 
 def main():
     global player_x, player_y, player, last_char, dungeon
-    
+    possible_chars = []
+    possible_chars += " █⮘⮙⮚⮛"
 
     while True:
         clear_screen()
@@ -134,7 +164,14 @@ def main():
             player.show_inv()
         elif key == "f":
             fight(3, [5, 10], "test monstah", ["quoicoubeh"], [("stick", 1)])
-
+        
+        if dungeon[player_y][player_x] not in possible_chars:
+            f = extract("dungeons/" + dungeon[player_y][player_x])
+            if f:
+                dungeon[player_y][player_x] = " "
+            else:
+                die()
+            
         # Update the new position of the player
         last_char = dungeon[player_y][player_x]
         if last_char == "": last_char = " "
