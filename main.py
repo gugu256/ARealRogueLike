@@ -24,9 +24,11 @@ class player:
 # Create the player
 last_char = ""
 player_y, player_x = 2, 2
-char = "¤"
+char =  "¤" 
 
-dungeon = open("dungeon.dng", "r").read().splitlines()
+dungeon = open("dungeon.dng", "r").read().splitlines() 
+for row in range(len(dungeon)):
+    dungeon[row] = dungeon[row].replace("#", "█").replace("u", "⮙")
 
 def clear_screen():
     os.system('cls')
@@ -35,15 +37,15 @@ def get_key():
     return msvcrt.getch().decode('utf-8').lower()
 
 def main():
-    global player_x, player_y, player, last_char
+    global player_x, player_y, player, last_char, dungeon
+    
 
     while True:
         clear_screen()
 
         # Draw the dungeon
         for row in dungeon:
-            print(row.replace("#", "█"))
-            #print(row)
+            print(row)
 
         # Clear the previous position of the player
         dungeon[player_y] = dungeon[player_y][:player_x] + last_char + dungeon[player_y][player_x + 1:]
@@ -52,13 +54,13 @@ def main():
         key = get_key()
 
         # Process user input
-        if key == 'z' and dungeon[player_y - 1][player_x] != '#':
+        if key == 'z' and dungeon[player_y - 1][player_x] != '█':
             player_y -= 1
-        elif key == 's' and dungeon[player_y + 1][player_x] != '#':
+        elif key == 's' and dungeon[player_y + 1][player_x] != '█':
             player_y += 1
-        elif key == 'q' and dungeon[player_y][player_x - 1] != '#':
+        elif key == 'q' and dungeon[player_y][player_x - 1] != '█':
             player_x -= 1
-        elif key == 'd' and dungeon[player_y][player_x + 1] != '#':
+        elif key == 'd' and dungeon[player_y][player_x + 1] != '█':
             player_x += 1
         elif key == 'i':
             player.show_inv()
