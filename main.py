@@ -2,9 +2,7 @@ import os
 import msvcrt
 import random
 
-from colorama import Fore, Back, Style, just_fix_windows_console
 
-just_fix_windows_console()
 
 def clear_screen():
     os.system('cls')
@@ -40,7 +38,7 @@ def fight(enemyHP: int, enemyATK: list, enemyName: str, msg: list, loot: list):
     over = False
     while over is False:
         clear_screen()
-        print(f"STATS:\nYour HP : {player.hp}\n{enemyName}'s HP : {enemyHP}")
+        print(f"STATS:\nYour HP : {player.hp}\n{enemyName}'s HP : {monsterHP}")
         print("\nYour turn!\n")
         for i in player.attacks.names:
             print(i, ": ", player.attacks.names[i][0], " DMG, ", player.attacks.names[i][1], "% chance")
@@ -75,17 +73,16 @@ def fight(enemyHP: int, enemyATK: list, enemyName: str, msg: list, loot: list):
             won = True
             break
 
-        
-        print(f"STATS:\nYour HP : {player.hp}\n{enemyName}'s HP : {enemyHP}")
+        clear_screen()
+
+        print(f"STATS:\nYour HP : {player.hp}\n{enemyName}'s HP : {monsterHP}")
 
         print(f"\n{enemyName.upper()}'s turn !")
         if random.randint(0, 1) == 1: print(random.choice(msg))
-            
 
-        else:
-            atk = random.randint(enemyATK[0], enemyATK[1])
-            player.hp -= atk
-            input(f"\n {enemyName.upper()} dealt you {atk} damages !\nYou now have {player.hp} HP !")
+        atk = random.randint(enemyATK[0], enemyATK[1])
+        player.hp -= atk
+        input(f"\n {enemyName.upper()} dealt you {atk} damages !\nYou now have {player.hp} HP !")
 
         if player.hp <= 0:
             print(f"You died...")
@@ -121,14 +118,30 @@ def die():
     input("Press enter to quit./")
     quit()
 
+def opendung(path):
+    global dungeon, ingame, player_y, player_x, current_dung
+    if path == current_dung:
+        pass
+    else:
+        current_dung = path
+        player_y, player_x = 2, 2
+        clear_screen()
+        dungeon = open(path, "r").read().splitlines()
+        for row in range(len(dungeon)):
+            dungeon[row] = dungeon[row].replace("#", "█").replace("u", "⮙")
+    
+    
+
 # Create the player
 last_char = ""
 player_y, player_x = 2, 2
 char =  "@"
 
-dungeon = open("dungeons/0.dng", "r").read().splitlines() 
-for row in range(len(dungeon)):
-    dungeon[row] = dungeon[row].replace("#", "█").replace("u", "⮙")
+current_dung = ""
+dungeon = []
+
+opendung("dungeons/0.dng")
+
 
 def get_key():
     return msvcrt.getch().decode('utf-8').lower()
@@ -162,13 +175,11 @@ def main():
             player_x += 1
         elif key == 'i':
             player.show_inv()
-        elif key == "f":
-            fight(3, [5, 10], "test monstah", ["quoicoubeh"], [("stick", 1)])
         
         if dungeon[player_y][player_x] not in possible_chars:
             f = extract("dungeons/" + dungeon[player_y][player_x])
             if f:
-                dungeon[player_y][player_x] = " "
+                dungeon[player_y] = dungeon[player_y].replace(dungeon[player_y][player_x], " ")
             else:
                 die()
             
@@ -176,5 +187,10 @@ def main():
         last_char = dungeon[player_y][player_x]
         if last_char == "": last_char = " "
         dungeon[player_y] = dungeon[player_y][:player_x] + char + dungeon[player_y][player_x + 1:]
-        
+
+        if key == 'n':
+            opendung("uwu.dng")
+        if key == 'o':
+            opendung("dungeons/0.dng")
+
 main()
