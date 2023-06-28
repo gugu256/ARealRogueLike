@@ -128,7 +128,7 @@ def opendung(path):
         clear_screen()
         dungeon = open(path, "r").read().splitlines()
         for row in range(len(dungeon)):
-            dungeon[row] = dungeon[row].replace("#", "█").replace("u", "⮙")
+            dungeon[row] = dungeon[row].replace("#", "█").replace("u", " ").replace("d", "")
     
     
 
@@ -140,7 +140,7 @@ char =  "@"
 current_dung = ""
 dungeon = []
 
-opendung("dungeons/0.dng")
+opendung("dungeon/center.dng")
 
 
 def get_key():
@@ -177,7 +177,7 @@ def main():
             player.show_inv()
         
         if dungeon[player_y][player_x] not in possible_chars:
-            f = extract("dungeons/" + dungeon[player_y][player_x])
+            f = extract("monsters/" + dungeon[player_y][player_x])
             if f:
                 dungeon[player_y] = dungeon[player_y].replace(dungeon[player_y][player_x], " ")
             else:
@@ -187,10 +187,5 @@ def main():
         last_char = dungeon[player_y][player_x]
         if last_char == "": last_char = " "
         dungeon[player_y] = dungeon[player_y][:player_x] + char + dungeon[player_y][player_x + 1:]
-
-        if key == 'n':
-            opendung("uwu.dng")
-        if key == 'o':
-            opendung("dungeons/0.dng")
 
 main()
